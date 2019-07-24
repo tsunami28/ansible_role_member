@@ -1,0 +1,6 @@
+---
+# template\roles\adds\defaults\main.yml
+
+domain_admin_username: carapice\\Administrator
+domain_admin_password: Mainstream4Biz.556
+domain_name: carapice.LOCAL

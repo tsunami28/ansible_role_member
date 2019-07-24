@@ -1,0 +1,41 @@
+---
+
+- name: install xComputerManagement DSC Resource from PowerShell Gallery
+  win_psmodule:
+    name: xComputerManagement
+    state: present
+  ignore_errors: True
+- name: copy dsc resources to target machines
+  win_copy:
+    src: ../../files/{{item}}
+    dest: C:\Program Files\WindowsPowerShell\Modules
+    force: no
+  loop:
+  - xActiveDirectory
+  - xComputerManagement
+- name: copy LCM disablement script
+  win_copy:
+    src: ../../files/disable_lcm_no_reboot.ps1
+    dest: c:\Temp\
+- name: disable LCM before using win_dsc module and don't allow dsc to do a reboot
+  win_shell: c:\temp\disable_lcm_no_reboot.ps1
+- name: wait for domain via win_dsc module
+  win_dsc:
+    resource_name: xWaitForADDomain
+    DomainName: "{{domain_name}}"
+    RetryIntervalSec: 5
+    RetryCount: 999
+    RebootRetryCount: 100
+
+- name: join machine to domain
+  win_dsc:
+    resource_name: xComputer
+    name: "{{ansible_hostname}}"
+    domainname: "{{domain_name}}"
+    Credential_username: "{{domain_admin_username}}"
+    Credential_password: "{{domain_admin_password}}"
+  notify: reboot
+
+  handlers:
+  - name: reboot
+    win_reboot:
