@@ -3,6 +3,7 @@
   win_dns_client:
     adapter_names: '*'
     ipv4_addresses:
+    # Pulling out DCs private IPs and setting them as dns servers
     - "{{ hostvars['carapice-dc-1']['xs_vm_def']['networks'][1]['ip'] | ipaddr('address') }}"
     - "{{ hostvars['carapice-dc-2']['xs_vm_def']['networks'][1]['ip'] | ipaddr('address') }}"
 
