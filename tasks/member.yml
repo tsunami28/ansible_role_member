@@ -1,4 +1,12 @@
 ---
+
+- name: copy IPv6 script
+  win_copy:
+    src: ../../files/ToDo/DisableIPv6.ps1
+    dest: c:\Temp\
+- name: Set properties for network adapters
+  win_shell: c:\temp\DisableIPv6.ps1
+  
 - name: Configure Primary DNS Server
   win_dns_client:
     adapter_names: '*'
@@ -19,6 +27,7 @@
 - name: Reboot
   win_reboot:
   when: domain_state.reboot_required
+  
 - name: wait for Server to come back online
   wait_for_connection:
       delay: 0 # not required. Number of seconds to wait before starting to poll.
